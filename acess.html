@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lieux accessibles à Villeurbanne</title>
+    <style>
+      /* CSS pour le tableau d'affichage des lieux */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      tr:hover {
+        background-color: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lieux accessibles à Villeurbanne</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Adresse</th>
+          <th>Accessibilité</th>
+        </tr>
+      </thead>
+      <tbody id="lieux-table"></tbody>
+    </table>
+
+    <div>
+        <button id="1">Page 1</button>
+        <button id="2">Page 2</button>
+        <button id="3">Page 3</button>
+        <button id="4">Page 4</button>
+        <button id="5">Page 5</button>
+        <button id="6">Page 6</button>
+        <button id="7">Page 7</button>
+        <button id="8">Page 8</button>
+      </div>
+
+    <script>
+      // URL de l'API Accès Libre pour Villeurbanne
+      let url = 'https://acceslibre.beta.gouv.fr/api/erps/?commune=Antony&page=1&q=';
+
+      // Fonction pour mettre à jour l'URL de l'API en fonction du numéro de page
+        function updateUrl(page) {
+            url = `https://acceslibre.beta.gouv.fr/api/erps/?commune=Antony&page=${page}&q=`;
+        }
+
+// Récupérer les boutons
+const buttons = document.querySelectorAll('button');
+
+// Ajouter un événement "click" à chaque bouton
+buttons.forEach((button) => {
+  button.addEventListener('click', () => {
+    // Récupérer le numéro de page à partir de l'ID du bouton
+    const page = button.id;
+    // Mettre à jour l'URL de l'API avec le numéro de page correspondant
+    updateUrl(page);
+    // Récupérer les données de l'API avec fetch()
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Afficher les données dans le tableau HTML
+        const lieuxTable = document.getElementById('lieux-table');
+        lieuxTable.innerHTML = ''; // Vider le tableau avant d'afficher les nouvelles données
+        data.results.forEach(lieu => {
+          const tr = document.createElement('tr');
+          const nomTd = document.createElement('td');
+          nomTd.textContent = lieu.nom;
+          tr.appendChild(nomTd);
+          const adresseTd = document.createElement('td');
+          adresseTd.textContent = lieu.adresse.formatted;
+          tr.appendChild(adresseTd);
+          const accessibiliteTd = document.createElement('td');
+          accessibiliteTd.textContent = lieu.accessibilite.handicap_moteur ? 'Accessible' : 'Non accessible';
+          tr.appendChild(accessibiliteTd);
+          lieuxTable.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        // Afficher une erreur si la requête n'a pas abouti
+        console.error('Erreur lors de la récupération des données :', error);
+      });
+  });
+});
+    </script>
+  </body>
+</html>
