@@ -35,7 +35,7 @@
       <thead>
         <tr>
           <th>Nom</th>
-          <th>Adresse</th>
+          <th>Coordonnées</th>
           <th>Accessibilité</th>
         </tr>
       </thead>
@@ -85,7 +85,7 @@ buttons.forEach((button) => {
           nomTd.textContent = lieu.nom;
           tr.appendChild(nomTd);
           const adresseTd = document.createElement('td');
-          adresseTd.textContent = lieu.adresse.formatted;
+          adresseTd.textContent = lieu.geom.coordinates;
           tr.appendChild(adresseTd);
           const accessibiliteTd = document.createElement('td');
           accessibiliteTd.textContent = lieu.accessibilite.handicap_moteur ? 'Accessible' : 'Non accessible';
