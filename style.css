@@ -1,0 +1,7 @@
+.code-container {
+    display: flex;
+  }
+  
+  .code-block {
+    flex: 1;
+  }

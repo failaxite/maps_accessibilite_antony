@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Ma Carte</title>
+    <style>
+      /* Style pour la carte */
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      tr:hover {
+        background-color: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <div id="map"></div>
+    <h1>Lieux accessibles à Villeurbanne</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Coordonnées</th>
+          <th>Accessibilité</th>
+        </tr>
+      </thead>
+      <tbody id="lieux-table"></tbody>
+    </table>
+
+    <div>
+        <button id="1">Page 1</button>
+        <button id="2">Page 2</button>
+        <button id="3">Page 3</button>
+        <button id="4">Page 4</button>
+        <button id="5">Page 5</button>
+        <button id="6">Page 6</button>
+        <button id="7">Page 7</button>
+        <button id="8">Page 8</button>
+      </div>
+
+    <script>
+
+        let coordinates = [];
+        let firstValue = coordinates[1];
+
+
+      // URL de l'API Accès Libre pour Villeurbanne
+        let url = 'https://acceslibre.beta.gouv.fr/api/erps/?commune=Antony&page=1&q=';
+
+      // Fonction pour mettre à jour l'URL de l'API en fonction du numéro de page
+        function updateUrl(page) {
+            url = `https://acceslibre.beta.gouv.fr/api/erps/?commune=Antony&page=${page}&q=`;
+        }
+
+// Récupérer les boutons
+const buttons = document.querySelectorAll('button');
+
+// Ajouter un événement "click" à chaque bouton
+buttons.forEach((button) => {
+  button.addEventListener('click', () => {
+    // Récupérer le numéro de page à partir de l'ID du bouton
+    const page = button.id;
+    // Mettre à jour l'URL de l'API avec le numéro de page correspondant
+    updateUrl(page);
+    // Récupérer les données de l'API avec fetch()
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Afficher les données dans le tableau HTML
+        const lieuxTable = document.getElementById('lieux-table');
+        lieuxTable.innerHTML = ''; // Vider le tableau avant d'afficher les nouvelles données
+        data.results.forEach(lieu => {
+            lieu.geom.coordinates.forEach(coord => coordinates.push(coord));
+            console.log(firstValue);
+            const tr = document.createElement('tr');
+            const nomTd = document.createElement('td');
+            nomTd.textContent = lieu.nom;
+            tr.appendChild(nomTd);
+            const adresseTd = document.createElement('td');
+            adresseTd.textContent = lieu.geom.coordinates;
+            tr.appendChild(adresseTd);
+            const accessibiliteTd = document.createElement('td');
+            accessibiliteTd.textContent = lieu.accessibilite.handicap_moteur ? 'Accessible' : 'Non accessible';
+            tr.appendChild(accessibiliteTd);
+            lieuxTable.appendChild(tr);
+        });
+      })
+      .catch(error => {
+        // Afficher une erreur si la requête n'a pas abouti
+        console.error('Erreur lors de la récupération des données :', error);
+      });
+  });
+});
+    </script>
+    <script>
+
+      // Coordonnées du marqueur personnalisé
+      var markerCoords = {lat: 48.753830, lng: 2.296390};
+      
+      // Création de la carte
+      function initMap() {
+        // Coordonnées du centre de la carte
+        var center = {lat: 48.753830, lng: 2.296390};
+        
+        // Options de la carte
+        var options = {
+          zoomControl: false, //afficher ou non le bouton zoom et dézoom
+          fullscreenControl: false, //afficher ou non le bouton fullscreen
+          center: center, //definir le centre de la map
+          zoom: 14, //zoom de base de la map
+          scrollwheel: true //pouvoir scroll avec la molette
+        };
+        
+        // Création de la carte
+        var map = new google.maps.Map(document.getElementById('map'), options);
+        
+        // Création du marqueur personnalisé
+        var marker = new google.maps.Marker({
+          position: markerCoords,
+          map: map,
+          icon: {
+            url: 'https://cdn.discordapp.com/attachments/512761795459416065/1082211449146970172/1f3e0.png', //image pour le marqueur
+            scaledSize: new google.maps.Size(50, 50),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(25, 25)
+          }
+        });
+
+        coordinates.forEach(coord => {
+        var marker = new google.maps.Marker({
+            position: { lat: coordinates[1], lng: coordinates[0] },
+            map: map,
+            icon: {
+            url: 'https://cdn.discordapp.com/attachments/512761795459416065/1082211449146970172/1f3e0.png', //image pour le marqueur
+            scaledSize: new google.maps.Size(50, 50),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(25, 25)
+            }
+        });
+        });
+        
+        // Coordonnées des sommets du polygone / séparation ville Antony
+        var polygonCoords = [
+            {lat: 48.746368, lng: 2.295965},
+            {lat: 48.746137, lng: 2.306652},
+            {lat: 48.753354, lng: 2.307267},
+            {lat: 48.753222, lng: 2.312145},
+            {lat: 48.759956, lng: 2.314026},
+            {lat: 48.764128, lng: 2.318160},
+            {lat: 48.768548, lng: 2.311799},
+            {lat: 48.763688, lng: 2.305438},
+            {lat: 48.761904, lng: 2.298420},
+            {lat: 48.761678, lng: 2.290051},
+            {lat: 48.757321, lng: 2.289821},
+            {lat: 48.752426, lng: 2.286676},
+            {lat: 48.748818, lng: 2.289981},
+            {lat: 48.746324, lng: 2.291699}
+        ];
+
+        // Création du polygone sur la map
+        var polygon = new google.maps.Polygon({
+            paths: polygonCoords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+        });
+
+        // Ajout du polygone à la carte
+        polygon.setMap(map);
+      }
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsKGg-qtYsT71F-4SuWSRLDYcIjwe2W88&callback=initMap">
+    </script>
+  </body>
+</html>
